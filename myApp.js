@@ -15,7 +15,7 @@
 // mongoose.connect(<Your URI>, { useNewUrlParser: true, useUnifiedTopology: true }); 
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://new_dbuser:m1yXy11g9JZFzW9L@cluster0-bjhr4.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb+srv://new_dbuser:m1yXy11g9JZFzW9L@cluster0-bjhr4.mongodb.net/test?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false });
 
 /** # SCHEMAS and MODELS #
 /*  ====================== */
@@ -85,13 +85,14 @@ const Person = mongoose.model("Person", personSchema);
 //    ...do your stuff here...
 // });
 
-var createAndSavePerson = function(done) {
+var createAndSavePerson = function() {
   var details = new Person({name: "Jane Fonda", age: 84, favoriteFoods: ["vodka", "air"]});
   details.save((err, data)=>{
     if(err){
       return console.log(err);
     }
-    done(null, data);
+    // done(null, data);
+    console.log(data);
   })
   // done(null /*, data*/);
 };
@@ -209,16 +210,15 @@ var findEditThenSave = function(personId, done) {
 // to `findOneAndUpdate()`. By default the method
 // passes the unmodified object to its callback.
 
-var findAndUpdate = function(personName, done) {
+var findAndUpdate = (function(personName, done) {
   var ageToSet = 20;
-  Person.findAndUpdate({name : personName}, {age : ageToSet}, {new : true}, (err, data)=>{
+  Person.findOneAndUpdate({name : personName}, {age : ageToSet}, {new : true}, (err, data)=>{
     if(err){
       return done(err);
     }
-    return done(null, done);
+    return done(null, data);
   })
-  // done(null/*, data*/);
-};
+})();
 
 /** # CRU[D] part IV - DELETE #
 /*  =========================== */
